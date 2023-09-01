@@ -1,7 +1,7 @@
 # startDobra
 
-https://t.me/startDobra_bot\n
-https://t.me/hack_rt\n
-https://t.me/hackhatonrt_bot\n
+https://t.me/startDobra_bot |
+https://t.me/hack_rt |
+https://t.me/hackhatonrt_bot
 
 lib: telebot
