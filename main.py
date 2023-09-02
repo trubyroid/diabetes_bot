@@ -1,5 +1,6 @@
 import telebot
 import config
+import requests
 from telebot import types
 from registerPageUtils import connect_db, process_name_step
 
@@ -45,12 +46,12 @@ def back(message):
     btn_choose = types.KeyboardButton('Выбрать платформу')
     btn_get_homework = types.KeyboardButton('Получить домашнее задание')
     btn_pass_homework = types.KeyboardButton('Сдать домашнее задание')
+    btn_progress = types.KeyboardButton('Прогресс')               # in future
     btn_need_help = types.KeyboardButton('Нужна помощь')
     btn_main_menu = types.KeyboardButton('Главное меню')
-    markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_need_help, btn_main_menu)
+    markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_progress, btn_need_help, btn_main_menu)
     # messege
     bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
-
 
 # Handler
 @bot.message_handler(content_types=['text'])
@@ -61,7 +62,7 @@ def get_text_messages(message):
     # Главное меню
     # done
     if message.text == 'Главное меню':
-        btn_education = types.KeyboardButton("Пройти обучение")
+        btn_education = types.KeyboardButton("Обучение")
         btn_profile = types.KeyboardButton("Профиль")
         btn_social_media = types.KeyboardButton('Об онлайн-школе')
         markup.add(btn_education, btn_profile, btn_social_media)
@@ -69,15 +70,16 @@ def get_text_messages(message):
 
     # Обучение
     # done
-    elif message.text == 'Пройти обучение':
+    elif message.text == 'Обучение':
         # keyboard
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn_choose = types.KeyboardButton('Выбрать платформу')
         btn_get_homework = types.KeyboardButton('Получить домашнее задание')
         btn_pass_homework = types.KeyboardButton('Сдать домашнее задание')
+        btn_progress = types.KeyboardButton('Прогресс')               # in future
         btn_need_help = types.KeyboardButton('Нужна помощь')
         btn_main_menu = types.KeyboardButton('Главное меню')
-        markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_need_help, btn_main_menu)
+        markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_progress, btn_need_help, btn_main_menu)
         # messege
         bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
 
@@ -86,12 +88,19 @@ def get_text_messages(message):
     elif message.text == 'Выбрать платформу':
         # keyboard
         markup = types.InlineKeyboardMarkup()
-        button1 = types.InlineKeyboardButton("Сайт VK", url='https://vk.com/shkola.diabeta')
-        markup.add(button1)
-        bot.send_message(message.chat.id, "Привет, {0.first_name}! Нажми на кнопку и перейди на сайт)".format(message.from_user), reply_markup=markup)
-        # messege
-        markup = types.InlineKeyboardMarkup()
-        bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.\nЧтобы вернуться назад нажмите - /back', reply_markup=markup)
+        btn_vk_edu = types.InlineKeyboardButton("Школа диабета VK", url='https://vk.com/video/@shkola.diabeta?section=playlists')
+        btn_youtube_edu = types.InlineKeyboardButton("Школа диабета Youtube", url='https://www.youtube.com/playlist?list=PL_dK9vVNI4Vj10OHq4e9pDTqHxpijcTi-')
+        btn_dzen_edu = types.InlineKeyboardButton("Школа диабета Dzen", url='https://dzen.ru/dibet')
+        markup.add(btn_vk_edu)
+        markup.add(btn_youtube_edu)
+        markup.add(btn_dzen_edu)
+        bot.send_message(message.chat.id, "Программа обучения: https://vk.com/@shkola.diabeta-programma\nНажми на кнопку и перейди на сайт".format(message.from_user), reply_markup=markup)
+        # keyboard
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn_main_menu = types.KeyboardButton('Главное меню')
+        markup.add(btn_main_menu)
+        # messege 
+        bot.send_message(message.from_user.id, 'Чтобы вернуться назад нажмите - /back', reply_markup=markup)
 
     # Об онлайн-школе
     # in progress
