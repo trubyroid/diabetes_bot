@@ -38,6 +38,20 @@ def handle_register(message):
     bot.send_message(chat_id, 'Введите ваше имя:')
     bot.register_next_step_handler(message, lambda messege: process_name_step(messege, users, db, bot))
 
+@bot.message_handler(commands=['back'])
+def back(message):
+    # keyboard
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn_choose = types.KeyboardButton('Выбрать платформу')
+    btn_get_homework = types.KeyboardButton('Получить домашнее задание')
+    btn_pass_homework = types.KeyboardButton('Сдать домашнее задание')
+    btn_need_help = types.KeyboardButton('Нужна помощь')
+    btn_main_menu = types.KeyboardButton('Главное меню')
+    markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_need_help, btn_main_menu)
+    # messege
+    bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
+
+
 # Handler
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
@@ -50,12 +64,11 @@ def get_text_messages(message):
         btn_education = types.KeyboardButton("Пройти обучение")
         btn_profile = types.KeyboardButton("Профиль")
         btn_social_media = types.KeyboardButton('Об онлайн-школе')
-        btn_main_menu = types.KeyboardButton('Главное меню')
-        markup.add(btn_education, btn_profile, btn_social_media, btn_main_menu)
+        markup.add(btn_education, btn_profile, btn_social_media)
         bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
 
     # Обучение
-    # in progress
+    # done
     elif message.text == 'Пройти обучение':
         # keyboard
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -68,12 +81,24 @@ def get_text_messages(message):
         # messege
         bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
 
+    # Выбрать платформу
+    # in progress
+    elif message.text == 'Выбрать платформу':
+        # keyboard
+        markup = types.InlineKeyboardMarkup()
+        button1 = types.InlineKeyboardButton("Сайт VK", url='https://vk.com/shkola.diabeta')
+        markup.add(button1)
+        bot.send_message(message.chat.id, "Привет, {0.first_name}! Нажми на кнопку и перейди на сайт)".format(message.from_user), reply_markup=markup)
+        # messege
+        markup = types.InlineKeyboardMarkup()
+        bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.\nЧтобы вернуться назад нажмите - /back', reply_markup=markup)
+
     # Об онлайн-школе
     # in progress
     elif message.text == 'Об онлайн-школе':
         btn_main_menu = types.KeyboardButton('Главное меню')
         markup.add(btn_main_menu)
-
+        # markup = markup
         # messege
         bot.send_message(message.from_user.id, config.online_school_description, reply_markup=markup)
 
