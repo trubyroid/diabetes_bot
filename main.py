@@ -43,6 +43,7 @@ def handle_register(message):
 def get_text_messages(message):
 
     # Главное меню
+    # done
     if message.text == 'Главное меню':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn_education = types.KeyboardButton("Пройти обучение")
@@ -52,6 +53,21 @@ def get_text_messages(message):
         markup.add(btn_education, btn_profile, btn_social_media, btn_main_menu)
         bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
 
+    # Обучение
+    # in progress
+    elif message.text == 'Пройти обучение':
+        # keyboard
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn_choose = types.KeyboardButton('Выбрать платформу')
+        btn_get_homework = types.KeyboardButton('Получить домашнее задание')
+        btn_pass_homework = types.KeyboardButton('Сдать домашнее задание')
+        btn_need_help = types.KeyboardButton('Нужна помощь')
+        btn_main_menu = types.KeyboardButton('Главное меню')
+        markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_need_help, btn_main_menu)
+        markup = markup
+        # messege
+        bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
+
     # Об онлайн-школе
     # in progress
     elif message.text == 'Об онлайн-школе':
@@ -59,7 +75,7 @@ def get_text_messages(message):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn_main_menu = types.KeyboardButton('Главное меню')
         markup.add(btn_main_menu)
-        markup = markup
+        # markup = markup
         # messege
         bot.send_message(message.from_user.id, config.online_school_description, reply_markup=markup)
 
