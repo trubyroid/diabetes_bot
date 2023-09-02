@@ -8,7 +8,11 @@ bot = telebot.TeleBot(config.token)
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn_reg = types.KeyboardButton("Зарегистрироваться")
+    markup.add(btn_reg)
     bot.send_message(message.from_user.id, config.greetings, reply_markup=markup)
+    bot.register_next_step_handler(message, handle_register)
+
 
 @bot.message_handler(commands=['clear_db'])
 def clear_db(messege):
@@ -31,12 +35,15 @@ def view_all(messege):
 
 @bot.message_handler(commands=['register'])
 def handle_register(message):
-    chat_id = message.chat.id
-    users = {}
-    db = connect_db("users.db")
-    # Запрашиваем имя
-    bot.send_message(chat_id, 'Введите ваше имя:')
-    bot.register_next_step_handler(message, lambda messege: process_name_step(messege, users, db, bot))
+    if message.text == "Зарегистрироваться":
+        chat_id = message.chat.id
+        users = {}
+        db = connect_db("users.db")
+        # Запрашиваем имя
+        bot.send_message(chat_id, 'Введите ваше имя:', reply_markup=types.ReplyKeyboardRemove())
+        bot.register_next_step_handler(message, lambda messege: process_name_step(messege, users, db, bot))
+    else:
+        bot.register_next_step_handler(message, handle_register)
 
 @bot.message_handler(commands=['back'])
 def back(message):

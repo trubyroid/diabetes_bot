@@ -12,6 +12,10 @@ def questionnaire(message, bot):
         btn_main_menu = types.KeyboardButton('Главное меню')
         markup.add(btn_education, btn_profile, btn_social_media, btn_main_menu)
         bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
+    else:
+        bot.register_next_step_handler(message, lambda messege: questionnaire(messege, bot))
+
+
 def process_name_step(message, users, db, bot):
     chat_id = message.chat.id
     name = message.text
@@ -43,8 +47,6 @@ def process_email_step(message, users, db, bot):
 
     # Выводим информацию о пользователе
     user_info = users[chat_id]
-    info_message = f'Имя: {user_info["name"]}\nФамилия: {user_info["surname"]}\nПочта: {user_info["email"]}'
-    bot.send_message(chat_id, info_message)
 
     # Сохраняем информацию в базу данных
     db.insert_user(user_info['name'], user_info['surname'], user_info['email'])
