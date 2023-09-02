@@ -1,9 +1,13 @@
 from users import Database, connect_db
 from telebot import types
 
+
+def handler_questionnaire(message, bot):
+    pass
+
 def questionnaire(message, bot):
     if message.text == "Да":
-        pass
+        bot.register_next_step_handler(message, lambda messege: handler_questionnaire(messege, bot))
     elif message.text == "Нет":
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn_education = types.KeyboardButton("Пройти обучение")
