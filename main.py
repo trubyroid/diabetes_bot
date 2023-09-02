@@ -41,6 +41,7 @@ def handle_register(message):
 # Handler
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
+
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
     # Главное меню
@@ -64,7 +65,6 @@ def get_text_messages(message):
         btn_need_help = types.KeyboardButton('Нужна помощь')
         btn_main_menu = types.KeyboardButton('Главное меню')
         markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_need_help, btn_main_menu)
-        markup = markup
         # messege
         bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
 
@@ -82,11 +82,11 @@ def get_text_messages(message):
         btn_edit_profile = types.KeyboardButton('Редактировать профиль')
         markup.add(btn_show_profile, btn_edit_profile)
 
-        bot.send_message(message.from_user.id, config.online_school_description, reply_markup=markup)
+        bot.send_message(message.from_user.id, config.profile_section, reply_markup=markup)
     # Некорректный ввод
     # done
     else:
-        # messege
         bot.send_message(message.from_user.id, "Такой команды нет. Введите корректную команду.")
+
 
 bot.polling(none_stop=True, interval=0)
