@@ -1,14 +1,17 @@
-from users import Database
+from users import Database, connect_db
+from telebot import types
 
-def connect_db(path_db):
-    db = Database(path_db)
-    # Установка соединения с базой данных
-    db.connect()
-    # Создание таблицы, если она не существует
-    db.create_table()
-
-    return db
-
+def questionnaire(message, bot):
+    if message.text == "Да":
+        pass
+    elif message.text == "Нет":
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn_education = types.KeyboardButton("Пройти обучение")
+        btn_profile = types.KeyboardButton("Профиль")
+        btn_social_media = types.KeyboardButton('Об онлайн-школе')
+        btn_main_menu = types.KeyboardButton('Главное меню')
+        markup.add(btn_education, btn_profile, btn_social_media, btn_main_menu)
+        bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
 def process_name_step(message, users, db, bot):
     chat_id = message.chat.id
     name = message.text
@@ -45,3 +48,10 @@ def process_email_step(message, users, db, bot):
 
     # Сохраняем информацию в базу данных
     db.insert_user(user_info['name'], user_info['surname'], user_info['email'])
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn_yes = types.KeyboardButton('Да')
+    btn_no = types.KeyboardButton('Нет')
+    markup.add(btn_yes, btn_no)
+    bot.send_message(chat_id, 'Для составления персональной программы обучения нам нужно задать вам несколько вопросов. Хотите заполнить анкету сейчас?', reply_markup=markup)
+    bot.register_next_step_handler(message, lambda messege: questionnaire(messege, bot))

@@ -10,24 +10,24 @@ def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     bot.send_message(message.from_user.id, config.greetings, reply_markup=markup)
 
-# @bot.message_handler(commands=['clear_db'])
-# def clear_db(messege):
-#     db = connect_db("users.db")
-#     db.clear_database()
-#
-# @bot.message_handler(commands=['delete_user'])
-# def delete_user(messege):
-#     db = connect_db("users.db")
-#     bot.send_message(messege.chat.id, 'Введите id пользователя, которого нужно удалить:')
-#     db.clear_database()
-#
-# @bot.message_handler(commands=['all'])
-# def view_all(messege):
-#     db = connect_db("users.db")
-#     all_records = db.get_all_records()
-#     bot.send_message(messege.chat.id, "id | name | surname | email")
-#     for record in all_records:
-#         bot.send_message(messege.chat.id, f"{record[0]} | {record[1]} | {record[2]} | {record[3]}")
+@bot.message_handler(commands=['clear_db'])
+def clear_db(messege):
+    db = connect_db("users.db")
+    db.clear_database()
+
+@bot.message_handler(commands=['delete_user'])
+def delete_user(messege):
+    db = connect_db("users.db")
+    bot.send_message(messege.chat.id, 'Введите id пользователя, которого нужно удалить:')
+    db.clear_database()
+
+@bot.message_handler(commands=['all'])
+def view_all(messege):
+    db = connect_db("users.db")
+    all_records = db.get_all_records()
+    bot.send_message(messege.chat.id, "id | name | surname | email")
+    for record in all_records:
+        bot.send_message(messege.chat.id, f"{record[0]} | {record[1]} | {record[2]} | {record[3]}")
 
 @bot.message_handler(commands=['register'])
 def handle_register(message):
