@@ -1,13 +1,4 @@
-from users import Database
-
-def connect_db(path_db):
-    db = Database(path_db)
-    # Установка соединения с базой данных
-    db.connect()
-    # Создание таблицы, если она не существует
-    db.create_table()
-
-    return db
+from users import Database, connect_db
 
 def process_name_step(message, users, db, bot):
     chat_id = message.chat.id
