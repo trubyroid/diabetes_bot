@@ -105,7 +105,8 @@ def get_text_messages(message):
     elif message.text == 'Профиль':
         btn_show_profile = types.KeyboardButton('Посмотреть профиль')
         btn_edit_profile = types.KeyboardButton('Редактировать профиль')
-        markup.add(btn_show_profile, btn_edit_profile)
+        btn_get_back = types.KeyboardButton('Главное меню')
+        markup.add(btn_show_profile, btn_edit_profile, btn_get_back)
 
         bot.send_message(message.from_user.id, config.profile_section, reply_markup=markup)
     # Некорректный ввод
