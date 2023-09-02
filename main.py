@@ -19,6 +19,7 @@ def clear_db(messege):
 def delete_user(messege):
     db = connect_db("users.db")
     bot.send_message(messege.chat.id, 'Введите id пользователя, которого нужно удалить:')
+    bot.register_next_step_handler(messege, lambda messege: db.delete_user(messege.text))
     db.clear_database()
 @bot.message_handler(commands=['all'])
 def view_all(messege):
