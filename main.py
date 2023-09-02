@@ -20,6 +20,7 @@ def delete_user(messege):
     db = connect_db("users.db")
     bot.send_message(messege.chat.id, 'Введите id пользователя, которого нужно удалить:')
     db.clear_database()
+
 @bot.message_handler(commands=['all'])
 def view_all(messege):
     db = connect_db("users.db")
@@ -27,6 +28,7 @@ def view_all(messege):
     bot.send_message(messege.chat.id, "id | name | surname | email")
     for record in all_records:
         bot.send_message(messege.chat.id, f"{record[0]} | {record[1]} | {record[2]} | {record[3]}")
+
 @bot.message_handler(commands=['register'])
 def handle_register(message):
     chat_id = message.chat.id
@@ -41,7 +43,6 @@ def handle_register(message):
 def get_text_messages(message):
 
     # Главное меню
-    #
     if message.text == 'Главное меню':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn_education = types.KeyboardButton("Пройти обучение")
