@@ -1,0 +1,61 @@
+import sqlite3
+import threading
+
+class Database:
+    def __init__(self, db_file):
+        self.db_file = db_file
+        self._connection = threading.local()
+
+    def connect(self):
+        conn = getattr(self._connection, 'conn', None)
+        if conn is None:
+            conn = sqlite3.connect(self.db_file)
+            self._connection.conn = conn
+        return conn
+
+    def __del__(self):
+        conn = getattr(self._connection, 'conn', None)
+        if conn is not None:
+            conn.close()
+
+    def execute_query(self, query, params=None):
+        conn = self.connect()
+        cursor = conn.cursor()
+        if params:
+            cursor.execute(query, params)
+        else:
+            cursor.execute(query)
+        conn.commit()
+        return cursor.lastrowid
+
+    def create_table(self):
+        query = '''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                surname TEXT,
+                email TEXT
+            )
+        '''
+        self.execute_query(query)
+
+    def insert_user(self, name, surname, email):
+        query = 'INSERT INTO users (name, surname, email) VALUES (?, ?, ?)'
+        params = (name, surname, email)
+        self.execute_query(query, params)
+
+    def get_all_records(self):
+        query = f"SELECT * FROM users"
+        cursor = self.connect().cursor()
+        cursor.execute(query)
+        records = cursor.fetchall()
+        return records
+
+    def delete_user(self, user_id):
+        query = 'DELETE FROM users WHERE id = ?'
+        params = (user_id,)
+        self.execute_query(query, params)
+
+    def clear_database(self):
+        query = 'DELETE FROM users'
+        self.execute_query(query)
