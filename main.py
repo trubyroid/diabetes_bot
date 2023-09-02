@@ -98,8 +98,6 @@ def get_text_messages(message):
     elif message.text == 'Об онлайн-школе':
         btn_main_menu = types.KeyboardButton('Главное меню')
         markup.add(btn_main_menu)
-        # markup = markup
-        # messege
         bot.send_message(message.from_user.id, config.online_school_description, reply_markup=markup)
 
     elif message.text == 'Профиль':
