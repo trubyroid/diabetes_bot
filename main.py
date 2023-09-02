@@ -82,7 +82,7 @@ def get_text_messages(message):
         btn_edit_profile = types.KeyboardButton('Редактировать профиль')
         markup.add(btn_show_profile, btn_edit_profile)
 
-        bot.send_message(message.from_user.id, config.online_school_description, reply_markup=markup)
+        bot.send_message(message.from_user.id, config.profile_section, reply_markup=markup)
     # Некорректный ввод
     # done
     else:
