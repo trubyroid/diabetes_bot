@@ -1,6 +1,17 @@
 import sqlite3
 import threading
 
+
+def connect_db(path_db):
+    db = Database(path_db)
+    # Установка соединения с базой данных
+    db.connect()
+    # Создание таблицы, если она не существует
+    db.create_table()
+
+    return db
+
+
 class Database:
     def __init__(self, db_file):
         self.db_file = db_file
