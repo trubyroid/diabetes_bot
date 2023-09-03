@@ -56,11 +56,11 @@ class Database:
         '''
         self.execute_query(query)
 
-    def insert_user(self, chat_id, name, surname, email, age, type_diabetes, place, number, access):
-        query = 'INSERT INTO users (chat_id, name, surname, email, age, type_diabetes, place, number, access) ' \
-                'VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-        params = (chat_id, name, surname, email, age, type_diabetes, place, number, access)
-        self.execute_query(query, params)
+    # def insert_user(self, chat_id, name, surname, email, age, type_diabetes, place, number, access):
+    #     query = 'INSERT INTO users (chat_id, name, surname, email, age, type_diabetes, place, number, access) ' \
+    #             'VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    #     params = (chat_id, name, surname, email, age, type_diabetes, place, number, access)
+    #     self.execute_query(query, params)
 
     def get_all_records(self):
         query = "SELECT * FROM users"
