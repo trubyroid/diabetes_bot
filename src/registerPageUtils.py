@@ -1,19 +1,12 @@
 from src.users import Database, connect_db
 from telebot import types
 from src.keyboards import main_menu_kb
-from src.profile_edit import edit_age
-
-
-def handler_questionnaire(message, bot):
-    bot.send_message(message.chat.id, 'Сколько вам лет?', reply_markup=types.ReplyKeyboardRemove())
-    users = {message.chat.id: {}}
-    db = connect_db("users.db")
-    bot.register_next_step_handler(message, lambda message: edit_age(message, users, db, bot))
+from src.profile_edit import edit_profile_questionnaire
 
 
 def questionnaire(message, bot):
     if message.text == "Да":
-        bot.register_next_step_handler(message, lambda message: handler_questionnaire(message, bot))
+        edit_profile_questionnaire(message, bot)
     elif message.text == "Нет":
         main_menu_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), bot)
     else:
@@ -56,8 +49,8 @@ def process_email_step(message, users, db, bot):
     db.insert_user(user_info['name'], user_info['surname'], user_info['email'])
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn_yes = types.KeyboardButton('Да')
     btn_no = types.KeyboardButton('Нет')
+    btn_yes = types.KeyboardButton('Да')
     markup.add(btn_yes, btn_no)
     bot.send_message(chat_id, 'Для составления персональной программы обучения нам нужно задать вам несколько вопросов. Хотите заполнить анкету сейчас?', reply_markup=markup)
     bot.register_next_step_handler(message, lambda message: questionnaire(message, bot))

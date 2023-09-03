@@ -1,12 +1,29 @@
 from telebot import types
 from src.keyboards import main_menu_kb
+from src.users import connect_db
+
+
+def edit_profile_questionnaire(message, bot):
+    chat_id = message.chat.id
+    db = connect_db("users.db")
+    users = {chat_id: {}}
+    bot.send_message(message.chat.id, 'Сколько вам лет?', reply_markup=types.ReplyKeyboardRemove())
+    bot.register_next_step_handler(message, lambda message: edit_age(message, users, db, bot))
+
+
+def edit_profile(message, bot):
+    chat_id = message.chat.id
+    db = connect_db("users.db")
+    users = {chat_id: {}}
+    bot.send_message(chat_id, 'Введите ваше имя:', reply_markup=types.ReplyKeyboardRemove())
+    bot.register_next_step_handler(message, lambda message: edit_name(message, users, db, bot))
 
 
 def edit_name(message, users, db, bot):
     # Сохраняем имя
     chat_id = message.chat.id
     name = message.text
-    users[chat_id] = name
+    users[chat_id]['name'] = name
 
     # Запрашиваем фамилию
     bot.send_message(chat_id, 'Введите вашу фамилию:')

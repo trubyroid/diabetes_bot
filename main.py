@@ -1,7 +1,8 @@
 import telebot
 import config
 from telebot import types
-from src.registerPageUtils import connect_db, process_name_step, handler_questionnaire
+from src.profile_edit import edit_profile
+from src.registerPageUtils import connect_db, process_name_step
 from src.keyboards import main_menu_kb, education_kb, choose_platform_kb, about_school_kb, profile_kb
 
 bot = telebot.TeleBot(config.token)
@@ -87,7 +88,7 @@ def get_text_messages(message):
     elif message.text == 'Профиль':
         profile_kb(message, markup, bot)
     elif message.text == 'Редактировать профиль':
-        bot.register_next_step_handler(message, lambda message: handler_questionnaire(message, bot))
+        edit_profile(message, bot)
 
     # Некорректный ввод
     # done
