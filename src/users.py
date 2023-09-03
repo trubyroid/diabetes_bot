@@ -51,21 +51,20 @@ class Database:
         self.execute_query(query)
 
     def insert_user(self, name, surname, email):
-        query = 'INSERT INTO users (name, surname, email) VALUES (?, ?, ?)'
-        params = (name, surname, email)
-        self.execute_query(query, params)
+        query = f"INSERT INTO users (name, surname, email) " \
+                f"VALUES ({name}, {surname}, {email})"
+        self.execute_query(query)
 
     def get_all_records(self):
-        query = f"SELECT * FROM users"
+        query = "SELECT * FROM users"
         cursor = self.connect().cursor()
         cursor.execute(query)
         records = cursor.fetchall()
         return records
 
     def delete_user(self, user_id):
-        query = 'DELETE FROM users WHERE id = ?'
-        params = (user_id,)
-        self.execute_query(query, params)
+        query = f'DELETE FROM users WHERE id = {user_id}'
+        self.execute_query(query)
 
     def clear_database(self):
         query = 'DELETE FROM users'
