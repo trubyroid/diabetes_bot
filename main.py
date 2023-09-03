@@ -4,6 +4,7 @@ from telebot import types
 from src.profile_edit import edit_profile
 from src.registerPageUtils import connect_db, process_name_step
 from src.keyboards import main_menu_kb, education_kb, choose_platform_kb, about_school_kb, profile_kb
+from src.edu_test import edu_test
 
 bot = telebot.TeleBot(config.token)
 
@@ -69,12 +70,15 @@ def get_text_messages(message):
         education_kb(message, markup, bot)
 
     # Выбрать платформу
-    # in progress
     elif message.text == 'Выбрать платформу':
         choose_platform_kb(message, markup, bot)
 
+    # Пройти тестирование
+    elif message.text == 'Пройти тестирование':
+        edu_test(message, bot)
+
     # Об онлайн-школе
-    # done
+    # in progress
     elif message.text == 'Об онлайн-школе':
         about_school_kb(message, markup, bot)
 
@@ -82,9 +86,6 @@ def get_text_messages(message):
     # in progress
     elif message.text == 'Профиль':
         profile_kb(message, markup, bot)
-
-    # Редактировать профиль
-    # in progress
     elif message.text == 'Редактировать профиль':
         edit_profile(message, bot)
 
@@ -92,6 +93,5 @@ def get_text_messages(message):
     # done
     else:
         bot.send_message(message.from_user.id, "Такой команды нет. Введите корректную команду.")
-
 
 bot.polling(none_stop=True, interval=0)

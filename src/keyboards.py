@@ -14,7 +14,7 @@ def main_menu_kb(message, markup, bot):
 def education_kb(message, markup, bot):
     btn_choose = types.KeyboardButton('Выбрать платформу')
     btn_get_homework = types.KeyboardButton('Получить домашнее задание')
-    btn_pass_homework = types.KeyboardButton('Сдать домашнее задание')
+    btn_pass_homework = types.KeyboardButton('Пройти тестирование')
     btn_progress = types.KeyboardButton('Прогресс')  # in future
     btn_need_help = types.KeyboardButton('Нужна помощь')
     btn_main_menu = types.KeyboardButton('Главное меню')
@@ -61,3 +61,10 @@ def profile_kb(message, markup, bot):
     markup.add(btn_show_profile, btn_edit_profile, btn_get_back)
 
     bot.send_message(message.from_user.id, config.profile_section, reply_markup=markup)
+
+# def finish_edu_test_kb(message, markup, bot):
+#     btn_education = types.KeyboardButton("Обучение")
+#     btn_main_menu = types.KeyboardButton('Главное меню')
+#     markup.add(btn_education, btn_main_menu)
+
+#     bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
