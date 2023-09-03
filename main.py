@@ -41,6 +41,7 @@ def handle_register(message):
         chat_id = message.chat.id
         users = {message.chat.id: {}}
         db = connect_db("users.db")
+        # Запрашиваем имя
         bot.send_message(chat_id, 'Введите ваше имя:', reply_markup=types.ReplyKeyboardRemove())
         bot.register_next_step_handler(message, lambda messege: process_name_step(messege, users, db, bot))
     else:
@@ -49,15 +50,7 @@ def handle_register(message):
 @bot.message_handler(commands=['back'])
 def back(message):
     # keyboard
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn_choose = types.KeyboardButton('Выбрать платформу')
-    btn_get_homework = types.KeyboardButton('Получить домашнее задание')
-    btn_pass_homework = types.KeyboardButton('Сдать домашнее задание')
-    btn_progress = types.KeyboardButton('Прогресс')               # in future
-    btn_need_help = types.KeyboardButton('Нужна помощь')
-    btn_main_menu = types.KeyboardButton('Главное меню')
-    markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_progress, btn_need_help, btn_main_menu)
-    bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
+    education_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), bot)
 
 # Handler
 @bot.message_handler(content_types=['text'])
