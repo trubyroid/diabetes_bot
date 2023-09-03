@@ -2,8 +2,9 @@ import telebot
 import config
 from telebot import types
 from src.profile_edit import edit_profile
-from src.registerPageUtils import connect_db, process_name_step
+from src.registerPageUtils import process_name_step
 from src.keyboards import main_menu_kb, education_kb, choose_platform_kb, about_school_kb, profile_kb
+from src.users import connect_db, find_user_by_chat_id
 
 bot = telebot.TeleBot(config.token)
 
@@ -76,7 +77,15 @@ def get_text_messages(message):
         profile_kb(message, markup, bot)
     elif message.text == 'Редактировать профиль':
         edit_profile(message, bot)
-
+    elif message.text == "Посмотреть профиль":
+        result = find_user_by_chat_id(message.chat.id)
+        bot.send_message(message.chat.id, "Имя: " + result['name'])
+        bot.send_message(message.chat.id, "Фамилия: " + result['name'])
+        bot.send_message(message.chat.id, "Почта: " + result['name'])
+        bot.send_message(message.chat.id, "Возраст: " + result['name'])
+        bot.send_message(message.chat.id, "Тип диабета: " + result['name'])
+        bot.send_message(message.chat.id, "Город: " + result['name'])
+        bot.send_message(message.chat.id, "Номер телефона: " + result['name'])
     # Некорректный ввод
     # done
     else:
