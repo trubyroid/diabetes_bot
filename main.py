@@ -50,16 +50,7 @@ def handle_register(message):
 @bot.message_handler(commands=['back'])
 def back(message):
     # keyboard
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn_choose = types.KeyboardButton('Выбрать платформу')
-    btn_get_homework = types.KeyboardButton('Получить домашнее задание')
-    btn_pass_homework = types.KeyboardButton('Сдать домашнее задание')
-    btn_progress = types.KeyboardButton('Прогресс')               # in future
-    btn_need_help = types.KeyboardButton('Нужна помощь')
-    btn_main_menu = types.KeyboardButton('Главное меню')
-    markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_progress, btn_need_help, btn_main_menu)
-    # messege
-    bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
+    education_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), bot)
 
 # Handler
 @bot.message_handler(content_types=['text'])
@@ -70,21 +61,17 @@ def get_text_messages(message):
     # Главное меню
     if message.text == 'Главное меню':
         main_menu_kb(message, markup, bot)
-
     # Обучение
     elif message.text == 'Обучение':
         education_kb(message, markup, bot)
-
     # Выбрать платформу
     # in progress
     elif message.text == 'Выбрать платформу':
         choose_platform_kb(message, markup, bot)
-
     # Об онлайн-школе
     # in progress
     elif message.text == 'Об онлайн-школе':
         about_school_kb(message, markup, bot)
-
     elif message.text == 'Профиль':
         profile_kb(message, markup, bot)
     elif message.text == 'Редактировать профиль':
