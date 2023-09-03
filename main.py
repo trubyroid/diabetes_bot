@@ -4,6 +4,7 @@ from telebot import types
 from src.profile_edit import edit_profile
 from src.registerPageUtils import process_name_step
 from src.keyboards import main_menu_kb, education_kb, choose_platform_kb, about_school_kb, profile_kb
+from src.edu_test import edu_test
 from src.users import connect_db, find_user_by_chat_id
 
 bot = telebot.TeleBot(config.token)
@@ -60,19 +61,30 @@ def get_text_messages(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
     # Главное меню
+    # done
     if message.text == 'Главное меню':
         main_menu_kb(message, markup, bot)
+
     # Обучение
+    # in progress
     elif message.text == 'Обучение':
         education_kb(message, markup, bot)
+
     # Выбрать платформу
-    # in progress
     elif message.text == 'Выбрать платформу':
         choose_platform_kb(message, markup, bot)
+
+    # Пройти тестирование
+    elif message.text == 'Пройти тестирование':
+        edu_test(message, bot)
+
     # Об онлайн-школе
     # in progress
     elif message.text == 'Об онлайн-школе':
         about_school_kb(message, markup, bot)
+
+    # Профиль
+    # in progress
     elif message.text == 'Профиль':
         profile_kb(message, markup, bot)
     elif message.text == 'Редактировать профиль':
@@ -90,6 +102,5 @@ def get_text_messages(message):
     # done
     else:
         bot.send_message(message.from_user.id, "Такой команды нет. Введите корректную команду.")
-
 
 bot.polling(none_stop=True, interval=0)
