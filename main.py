@@ -17,24 +17,24 @@ def start(message):
     bot.register_next_step_handler(message, handle_register)
 
 
-@bot.message_handler(commands=['clear_db'])
-def clear_db(message):
-    db = connect_db("users.db")
-    db.clear_database()
-
-@bot.message_handler(commands=['delete_user'])
-def delete_user(message):
-    db = connect_db("users.db")
-    bot.send_message(message.chat.id, 'Введите id пользователя, которого нужно удалить:')
-    bot.register_next_step_handler(message, lambda message: db.delete_user(message.text) )
-
-@bot.message_handler(commands=['all'])
-def view_all(messege):
-    db = connect_db("users.db")
-    all_records = db.get_all_records()
-    bot.send_message(messege.chat.id, "id | name | surname | email")
-    for record in all_records:
-        bot.send_message(messege.chat.id, f"{record[0]} | {record[1]} | {record[2]} | {record[3]}")
+# @bot.message_handler(commands=['clear_db'])
+# def clear_db(message):
+#     db = connect_db("users.db")
+#     db.clear_database()
+#
+# @bot.message_handler(commands=['delete_user'])
+# def delete_user(message):
+#     db = connect_db("users.db")
+#     bot.send_message(message.chat.id, 'Введите id пользователя, которого нужно удалить:')
+#     bot.register_next_step_handler(message, lambda message: db.delete_user(message.text) )
+#
+# @bot.message_handler(commands=['all'])
+# def view_all(messege):
+#     db = connect_db("users.db")
+#     all_records = db.get_all_records()
+#     bot.send_message(messege.chat.id, "id | name | surname | email")
+#     for record in all_records:
+#         bot.send_message(messege.chat.id, f"{record[0]} | {record[1]} | {record[2]} | {record[3]}")
 
 @bot.message_handler(commands=['register'])
 def handle_register(message):
@@ -51,16 +51,7 @@ def handle_register(message):
 @bot.message_handler(commands=['back'])
 def back(message):
     # keyboard
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn_choose = types.KeyboardButton('Выбрать платформу')
-    btn_get_homework = types.KeyboardButton('Получить домашнее задание')
-    btn_pass_homework = types.KeyboardButton('Сдать домашнее задание')
-    btn_progress = types.KeyboardButton('Прогресс')               # in future
-    btn_need_help = types.KeyboardButton('Нужна помощь')
-    btn_main_menu = types.KeyboardButton('Главное меню')
-    markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_progress, btn_need_help, btn_main_menu)
-    # messege
-    bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
+    education_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), bot)
 
 # Handler
 @bot.message_handler(content_types=['text'])
@@ -69,10 +60,12 @@ def get_text_messages(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
     # Главное меню
+    # done
     if message.text == 'Главное меню':
         main_menu_kb(message, markup, bot)
 
     # Обучение
+    # in progress
     elif message.text == 'Обучение':
         education_kb(message, markup, bot)
 
@@ -85,12 +78,14 @@ def get_text_messages(message):
         edu_test(message, bot)
 
     # Об онлайн-школе
+    # in progress
     elif message.text == 'Об онлайн-школе':
         about_school_kb(message, markup, bot)
 
+    # Профиль
+    # in progress
     elif message.text == 'Профиль':
         profile_kb(message, markup, bot)
-
     elif message.text == 'Редактировать профиль':
         edit_profile(message, bot)
 
