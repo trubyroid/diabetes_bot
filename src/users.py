@@ -56,22 +56,22 @@ class Database:
         '''
         self.execute_query(query)
 
-    def insert_user(self, chat_id, name, surname, email, age, type_diabetes, place, number, access):
-        query = 'INSERT INTO users (chat_id, name, surname, email, age, type_diabetes, place, number, access) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-        params = (chat_id, name, surname, email, age, type_diabetes, place, number, access)
-        self.execute_query(query, params)
+    # def insert_user(self, chat_id, name, surname, email, age, type_diabetes, place, number, access):
+    #     query = 'INSERT INTO users (chat_id, name, surname, email, age, type_diabetes, place, number, access) ' \
+    #             'VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    #     params = (chat_id, name, surname, email, age, type_diabetes, place, number, access)
+    #     self.execute_query(query, params)
 
     def get_all_records(self):
-        query = f"SELECT * FROM users"
+        query = "SELECT * FROM users"
         cursor = self.connect().cursor()
         cursor.execute(query)
         records = cursor.fetchall()
         return records
 
     def delete_user(self, user_id):
-        query = 'DELETE FROM users WHERE id = ?'
-        params = (user_id,)
-        self.execute_query(query, params)
+        query = f'DELETE FROM users WHERE id = {user_id}'
+        self.execute_query(query)
 
     def clear_database(self):
         query = 'DELETE FROM users'

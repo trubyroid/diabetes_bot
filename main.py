@@ -16,24 +16,24 @@ def start(message):
     bot.register_next_step_handler(message, handle_register)
 
 
-@bot.message_handler(commands=['clear_db'])
-def clear_db(message):
-    db = connect_db("users.db")
-    db.clear_database()
-
-@bot.message_handler(commands=['delete_user'])
-def delete_user(message):
-    db = connect_db("users.db")
-    bot.send_message(message.chat.id, 'Введите id пользователя, которого нужно удалить:')
-    bot.register_next_step_handler(message, lambda message: db.delete_user(message.text) )
-
-@bot.message_handler(commands=['all'])
-def view_all(messege):
-    db = connect_db("users.db")
-    all_records = db.get_all_records()
-    bot.send_message(messege.chat.id, "id | name | surname | email")
-    for record in all_records:
-        bot.send_message(messege.chat.id, f"{record[0]} | {record[1]} | {record[2]} | {record[3]}")
+# @bot.message_handler(commands=['clear_db'])
+# def clear_db(message):
+#     db = connect_db("users.db")
+#     db.clear_database()
+#
+# @bot.message_handler(commands=['delete_user'])
+# def delete_user(message):
+#     db = connect_db("users.db")
+#     bot.send_message(message.chat.id, 'Введите id пользователя, которого нужно удалить:')
+#     bot.register_next_step_handler(message, lambda message: db.delete_user(message.text) )
+#
+# @bot.message_handler(commands=['all'])
+# def view_all(messege):
+#     db = connect_db("users.db")
+#     all_records = db.get_all_records()
+#     bot.send_message(messege.chat.id, "id | name | surname | email")
+#     for record in all_records:
+#         bot.send_message(messege.chat.id, f"{record[0]} | {record[1]} | {record[2]} | {record[3]}")
 
 @bot.message_handler(commands=['register'])
 def handle_register(message):
@@ -59,21 +59,32 @@ def get_text_messages(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
     # Главное меню
+    # done
     if message.text == 'Главное меню':
         main_menu_kb(message, markup, bot)
+
     # Обучение
+    # in progress
     elif message.text == 'Обучение':
         education_kb(message, markup, bot)
+
     # Выбрать платформу
     # in progress
     elif message.text == 'Выбрать платформу':
         choose_platform_kb(message, markup, bot)
+
     # Об онлайн-школе
-    # in progress
+    # done
     elif message.text == 'Об онлайн-школе':
         about_school_kb(message, markup, bot)
+
+    # Профиль
+    # in progress
     elif message.text == 'Профиль':
         profile_kb(message, markup, bot)
+
+    # Редактировать профиль
+    # in progress
     elif message.text == 'Редактировать профиль':
         edit_profile(message, bot)
 
