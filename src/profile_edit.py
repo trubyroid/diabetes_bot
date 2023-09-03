@@ -87,6 +87,7 @@ def edit_number(message, users, db, bot):
     number = message.text
     # Сохраняем возраст
     users[chat_id]['number'] = number
+    users[chat_id]['access'] = True
     #db.insert_user(user_info['name'], user_info['surname'], user_info['email'])
     bot.send_message(chat_id, 'Данные сохранены')
     main_menu_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), bot)
