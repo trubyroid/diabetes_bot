@@ -48,6 +48,7 @@ def edit_email(message, users, db, bot):
     # Сохраняем почту
     users[chat_id]['email'] = email
     user_info = users[chat_id]
+    db.update_partial_user(chat_id, name=user_info['name'], surname=user_info['surname'], email=user_info['email'])
     bot.send_message(chat_id, 'Введите ваш возраст:', reply_markup=types.ReplyKeyboardRemove())
     bot.register_next_step_handler(message, lambda messege: edit_age(messege, users, db, bot))
 
@@ -77,7 +78,7 @@ def edit_place(message, users, db, bot):
     chat_id = message.chat.id
     place = message.text
     # Сохраняем возраст
-    users[chat_id]['type_place'] = place
+    users[chat_id]['place'] = place
     bot.send_message(chat_id, 'Введите ваш контактный номер:')
     bot.register_next_step_handler(message, lambda messege: edit_number(messege, users, db, bot))
 
@@ -87,8 +88,9 @@ def edit_number(message, users, db, bot):
     number = message.text
     # Сохраняем возраст
     users[chat_id]['number'] = number
-    users[chat_id]['access'] = True
-    #db.insert_user(user_info['name'], user_info['surname'], user_info['email'])
+    users[chat_id]['access'] = 1
+    user_info = users[chat_id]
+    db.update_partial_user(chat_id, age=user_info['age'], type_diabetes=user_info['type_diabetes'], place=user_info['place'], number=user_info['number'], access=user_info['access'])
     bot.send_message(chat_id, 'Данные сохранены')
     main_menu_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), bot)
 
