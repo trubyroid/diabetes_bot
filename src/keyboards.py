@@ -1,12 +1,18 @@
 from telebot import types
 import config
+from src.users import find_user_by_chat_id
 
 
 def main_menu_kb(message, markup, bot):
-    btn_education = types.KeyboardButton("Обучение")
-    btn_profile = types.KeyboardButton("Профиль")
-    btn_social_media = types.KeyboardButton('Об онлайн-школе')
-    markup.add(btn_education, btn_profile, btn_social_media)
+    btns = []
+
+    if find_user_by_chat_id(message.chat.id)["access"]:
+        btns.append(types.KeyboardButton("Обучение"))
+    btns.append(types.KeyboardButton("Профиль"))
+    btns.append(types.KeyboardButton('Об онлайн-школе'))
+
+    for btn in btns:
+        markup.add(btn)
 
     bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
 
@@ -14,7 +20,7 @@ def main_menu_kb(message, markup, bot):
 def education_kb(message, markup, bot):
     btn_choose = types.KeyboardButton('Выбрать платформу')
     btn_get_homework = types.KeyboardButton('Получить домашнее задание')
-    btn_pass_homework = types.KeyboardButton('Сдать домашнее задание')
+    btn_pass_homework = types.KeyboardButton('Пройти тестирование')
     btn_progress = types.KeyboardButton('Прогресс')  # in future
     btn_need_help = types.KeyboardButton('Нужна помощь')
     btn_main_menu = types.KeyboardButton('Главное меню')
@@ -61,3 +67,10 @@ def profile_kb(message, markup, bot):
     markup.add(btn_show_profile, btn_edit_profile, btn_get_back)
 
     bot.send_message(message.from_user.id, config.profile_section, reply_markup=markup)
+
+# def finish_edu_test_kb(message, markup, bot):
+#     btn_education = types.KeyboardButton("Обучение")
+#     btn_main_menu = types.KeyboardButton('Главное меню')
+#     markup.add(btn_education, btn_main_menu)
+
+#     bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)

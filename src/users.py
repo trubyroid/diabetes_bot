@@ -5,25 +5,24 @@ import threading
 def find_user_by_chat_id(chat_id):
     db = connect_db("users.db")
 
-    query = "SELECT * FROM users WHERE chat_id = ?"
-    params = (chat_id,)
+    query = f"SELECT * FROM users WHERE chat_id = {chat_id}"
 
-    cursor = db.execute_query(query, params)
+    cursor = db.execute_query(query)
     record = cursor.fetchone()
+
 
     if record:
         user_id, chat_id, name, surname, email, age, type_diabetes, place, number, access = record
-        # Можете дополнительно обработать данные или их вывод
         return {
             "user_id": user_id,
             "chat_id": chat_id,
-            "name": name,
-            "surname": surname,
-            "email": email,
-            "age": age,
-            "type_diabetes": type_diabetes,
-            "place": place,
-            "number": number,
+            "Имя": name,
+            "Фамилия": surname,
+            "Почта": email,
+            "Возраст": age,
+            "Тип диабета": type_diabetes,
+            "Город": place,
+            "Номер телефона": number,
             "access": access
         }
     else:

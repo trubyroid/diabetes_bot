@@ -1,5 +1,4 @@
 from telebot import types
-import threading
 import config
 from main import bot as bot
 
