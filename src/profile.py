@@ -1,7 +1,22 @@
 from telebot import types
 from src.keyboards import main_menu_kb
-from src.users import connect_db
+from src.users import connect_db, find_user_by_chat_id
 
+
+def show_profile(message, bot):
+    result = find_user_by_chat_id(message.chat.id)
+    user_stats = ("Имя", "Фамилия", "Почта", "Возраст", "Тип диабета", "Город", "Номер телефона")
+
+    for i in user_stats:
+        if result[i]:
+            bot.send_message(message.chat.id, f"{i}: " + result[i])
+
+    # bot.send_message(message.chat.id, "Фамилия: " + result['surname'])
+    # bot.send_message(message.chat.id, "Почта: " + result['email'])
+    # bot.send_message(message.chat.id, "Возраст: " + result['age'])
+    # bot.send_message(message.chat.id, "Тип диабета: " + result['type_diabetes'])
+    # bot.send_message(message.chat.id, "Город: " + result['place'])
+    # bot.send_message(message.chat.id, "Номер телефона: " + result['number'])
 
 def edit_profile_questionnaire(message, bot):
     chat_id = message.chat.id
@@ -93,5 +108,4 @@ def edit_number(message, users, db, bot):
     db.update_partial_user(chat_id, age=user_info['age'], type_diabetes=user_info['type_diabetes'], place=user_info['place'], number=user_info['number'], access=user_info['access'])
     bot.send_message(chat_id, 'Данные сохранены')
     main_menu_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), bot)
-
 
