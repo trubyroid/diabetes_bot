@@ -1,12 +1,18 @@
 from telebot import types
 import config
+from src.users import find_user_by_chat_id
 
 
 def main_menu_kb(message, markup, bot):
-    btn_education = types.KeyboardButton("Обучение")
-    btn_profile = types.KeyboardButton("Профиль")
-    btn_social_media = types.KeyboardButton('Об онлайн-школе')
-    markup.add(btn_education, btn_profile, btn_social_media)
+    btns = []
+
+    if find_user_by_chat_id(message.chat.id)["access"]:
+        btns.append(types.KeyboardButton("Обучение"))
+    btns.append(types.KeyboardButton("Профиль"))
+    btns.append(types.KeyboardButton('Об онлайн-школе'))
+
+    for btn in btns:
+        markup.add(btn)
 
     bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
 
