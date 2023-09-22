@@ -5,11 +5,18 @@ from src.users import connect_db, find_user_by_chat_id
 
 def show_profile(message, bot):
     result = find_user_by_chat_id(message.chat.id)
-    user_stats = ("Имя", "Фамилия", "Почта", "Возраст", "Тип диабета", "Город", "Номер телефона")
 
-    for i in user_stats:
-        if result[i]:
-            bot.send_message(message.chat.id, f"{i}: " + result[i])
+    profile = f"""
+Имя: {result["Имя"]}
+Фамилия: {result["Фамилия"]}
+Почта: {result["Почта"]}
+Возраст: {result["Возраст"]}
+Тип диабета: {result["Тип диабета"]}
+Город: {result["Город"]}
+Номер телефона: {result["Номер телефона"]}
+    """
+
+    bot.send_message(message.chat.id, profile)
 
 def edit_profile_questionnaire(message, bot):
     chat_id = message.chat.id
