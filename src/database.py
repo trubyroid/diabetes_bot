@@ -28,19 +28,22 @@ def find_user_by_chat_id(chat_id):
     else:
         return None
 
-def connect_db(path_db):
-    db = Database(path_db)
+
+def connect_db():
+
+    db = Database()
     # Установка соединения с базой данных
     db.connect()
     # Создание таблицы, если она не существует
-    db.create_table()
+    db.create_tables()
 
     return db
 
 
 class Database:
-    def __init__(self, db_file):
-        self.db_file = db_file
+
+    def __init__(self):
+        self.db_file = "users.db"
         self._connection = threading.local()
 
     def connect(self):
@@ -65,8 +68,8 @@ class Database:
         conn.commit()
         return cursor
 
-    def create_table(self):
-        query = '''
+    def create_tables(self):
+        users_table_query = '''
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 chat_id TEXT,
@@ -79,33 +82,43 @@ class Database:
                 number TEXT,
                 access INTEGER
             )
+            '''
+        testing_table_query = '''
+            CREATE TABLE IF NOT EXISTS testing (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                chat_id TEXT,
+                question_1 TEXT,
+                question_2 TEXT,
+                question_3 TEXT
+            )
         '''
-        self.execute_query(query)
+        self.execute_query(users_table_query)
+        self.execute_query(testing_table_query)
 
-    def get_all_records(self):
+    def get_all_users(self):
         query = "SELECT * FROM users"
         cursor = self.connect().cursor()
         cursor.execute(query)
         records = cursor.fetchall()
         return records
 
-    def find_user_by_chat_id(self, chat_id):
-        query = f'SELECT * FROM users WHERE chat_id = {chat_id}'
-        result = self.execute_query(query)
-
-        # Получаем первую найденную запись, если она есть
-        if result:
-            print(result[0] + " gfdgfdgdfgdfbvcrghrehgre")
-            return result[0]
-        else:
-            return None
+    def get_all_answers(self):
+        query = "SELECT * FROM testing"
+        cursor = self.connect().cursor()
+        cursor.execute(query)
+        records = cursor.fetchall()
+        return records
 
     def delete_user(self, user_id):
         query = f'DELETE FROM users WHERE id = {user_id}'
         self.execute_query(query)
 
-    def clear_database(self):
-        query = 'DELETE FROM users'
+    def clear_users_table(self):
+        query = 'DELETE * FROM users'
+        self.execute_query(query)
+
+    def clear_testing_table(self):
+        query = 'DELETE * FROM testing'
         self.execute_query(query)
 
     def insert_partial_user(self, chat_id, name, surname, email, age=None, type_diabetes=None, place=None, number=None,
@@ -189,3 +202,7 @@ class Database:
         params.append(chat_id)
 
         self.execute_query(query, tuple(params))
+
+    def insert_user_answers(self, results):
+        query = 'INSERT INTO testing (chat_id, question_1, question_2, question_3) VALUES (?, ?, ?, ?)'
+        self.execute_query(query, results)

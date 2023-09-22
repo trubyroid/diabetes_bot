@@ -1,10 +1,14 @@
 from telebot import types
 from src.keyboards import main_menu_kb
-from src.users import connect_db, find_user_by_chat_id
+from src.database import find_user_by_chat_id
+from main import logger as logger
 
 
-def show_profile(message, bot):
-    result = find_user_by_chat_id(message.chat.id)
+def show_profile(message, db, bot):
+
+    logger.info(f"User {message.from_user.id} has asked to show him his profile")
+
+    result = find_user_by_chat_id(message.chat.id, db)
 
     profile = f"""
 Имя: {result["Имя"]}
@@ -18,17 +22,17 @@ def show_profile(message, bot):
 
     bot.send_message(message.chat.id, profile)
 
-def edit_profile_questionnaire(message, bot):
+def edit_profile_questionnaire(message, db, bot):
     chat_id = message.chat.id
-    db = connect_db("users.db")
     users = {chat_id: {}}
     bot.send_message(message.chat.id, 'Сколько вам лет?', reply_markup=types.ReplyKeyboardRemove())
     bot.register_next_step_handler(message, lambda message: edit_age(message, users, db, bot))
 
 
-def edit_profile(message, bot):
+def edit_profile(message, db, bot):
+    logger.info(f"User {message.from_user.id} has started to edit his profile")
+
     chat_id = message.chat.id
-    db = connect_db("users.db")
     users = {chat_id: {}}
     bot.send_message(chat_id, 'Введите ваше имя:', reply_markup=types.ReplyKeyboardRemove())
     bot.register_next_step_handler(message, lambda message: edit_name(message, users, db, bot))
@@ -102,6 +106,6 @@ def edit_number(message, users, db, bot):
     users[chat_id]['access'] = 1
     user_info = users[chat_id]
     db.update_partial_user(chat_id, age=user_info['age'], type_diabetes=user_info['type_diabetes'], place=user_info['place'], number=user_info['number'], access=user_info['access'])
-    bot.send_message(chat_id, 'Данные сохранены')
-    main_menu_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), bot)
+    bot.send_message(chat_id, 'Данные сохранены', reply_markup=main_menu_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), db))
+    logger.info(f"User {message.from_user.id} has finished to fill questionnaire")
 
