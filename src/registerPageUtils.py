@@ -4,16 +4,19 @@ from src.keyboards import main_menu_kb
 from src.profile import edit_profile_questionnaire
 from src.users import Database
 import config
+from ..main import logger as logger
 
 
-def questionnaire(message, bot):
+def questionnaire_request(message, bot):
     if message.text == "Да":
+        logger.info(f"User {message.from_user.id} has started to fill questionnaire")
         edit_profile_questionnaire(message, bot)
     elif message.text == "Нет":
+        logger.info(f"User {message.from_user.id} has refuced to fill questionnaire")
         bot.send_message(message.chat.id, config.about_questionaire, reply_markup=types.ReplyKeyboardRemove())
         main_menu_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), bot)
     else:
-        bot.register_next_step_handler(message, lambda message: questionnaire(message, bot))
+        bot.register_next_step_handler(message, lambda message: questionnaire_request(message, bot))
 
 
 def process_name_step(message, users, db, bot):
@@ -57,4 +60,4 @@ def process_email_step(message, users, bot):
     btn_yes = types.KeyboardButton('Да')
     markup.add(btn_yes, btn_no)
     bot.send_message(chat_id, config.questionnaire_request, reply_markup=markup)
-    bot.register_next_step_handler(message, lambda message: questionnaire(message, bot))
+    bot.register_next_step_handler(message, lambda message: questionnaire_request(message, bot))

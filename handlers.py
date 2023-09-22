@@ -1,6 +1,7 @@
 from telebot import types
 import config
 from main import bot as bot
+from main import logger as logger
 
 from src.profile import edit_profile, show_profile
 from src.registerPageUtils import process_name_step
@@ -11,6 +12,7 @@ from src.users import connect_db
 
 @bot.message_handler(commands=['start'])
 def start_user_flow(message):
+    logger.info(f"User {message.from_user.id} has started work with bot")
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn_reg = types.KeyboardButton("Зарегистрироваться")
     markup.add(btn_reg)
@@ -22,8 +24,9 @@ def start_user_flow(message):
 def register(message):
     if message.text == "Зарегистрироваться":
         chat_id = message.chat.id
-        users = {message.chat.id: {}}
+        users = {chat_id: {}}
         db = connect_db("users.db")
+        logger.info(f"User {chat_id} has started registration")
         bot.send_message(chat_id, 'Введите ваше имя:', reply_markup=types.ReplyKeyboardRemove())
         bot.register_next_step_handler(message, lambda messege: process_name_step(messege, users, db, bot))
     else:
