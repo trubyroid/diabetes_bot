@@ -1,60 +1,65 @@
-from src.users import Database, connect_db
-from telebot import types
-from src.keyboards import main_menu_kb
+"""
+В этом модуле реализована регистрация и запрос на прохождение анкетирования
+"""
+
+from src.keyboards import main_menu_kb, yes_or_no_kb
 from src.profile import edit_profile_questionnaire
-from src.users import Database
+from main import logger as logger
+from telebot import types
 import config
 
 
-def questionnaire(message, bot):
-    if message.text == "Да":
-        edit_profile_questionnaire(message, bot)
-    elif message.text == "Нет":
-        bot.send_message(message.chat.id, config.about_questionaire, reply_markup=types.ReplyKeyboardRemove())
-        main_menu_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), bot)
-    else:
-        bot.register_next_step_handler(message, lambda message: questionnaire(message, bot))
-
-
-def process_name_step(message, users, db, bot):
+def process_name_step(message, user_data, db, bot):
     chat_id = message.chat.id
     name = message.text
 
+    # Сохраняем имя
+    user_data['name'] = name
+
     # Запрашиваем фамилию
     bot.send_message(chat_id, 'Введите вашу фамилию:')
-    bot.register_next_step_handler(message, lambda message: process_surname_step(message, users, bot))
+    bot.register_next_step_handler(message, lambda message: process_surname_step(message, user_data, db, bot))
 
-    # Сохраняем имя
-    users[chat_id] = {'name': name}
 
-def process_surname_step(message, users, bot):
+def process_surname_step(message, user_data, db, bot):
     chat_id = message.chat.id
     surname = message.text
 
+    # Сохраняем фамилию
+    user_data['surname'] = surname
+
     # Запрашиваем почту
     bot.send_message(chat_id, 'Введите вашу почту:')
-    bot.register_next_step_handler(message, lambda message: process_email_step(message, users, bot))
+    bot.register_next_step_handler(message, lambda message: process_email_step(message, user_data, db, bot))
 
-    # Добавляем фамилию
-    users[chat_id]['surname'] = surname
 
-def process_email_step(message, users, bot):
+def process_email_step(message, user_data, db, bot):
     chat_id = message.chat.id
     email = message.text
 
     # Сохраняем почту
-    users[chat_id]['email'] = email
+    user_data['email'] = email
 
-    # Выводим информацию о пользователе
-    user_info = users[chat_id]
+    # Добавляем в базу данных информацию о новом пользователе
+    db.add_user(chat_id, user_data['name'], user_data['surname'], user_data['email'])
 
-    # Сохраняем информацию в базу данных
-    db = Database("users.db")
-    db.insert_partial_user(chat_id, user_info['name'], user_info['surname'], user_info['email'])
+    logger.info(f"User {message.chat.id} has finished registration")
 
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn_no = types.KeyboardButton('Нет')
-    btn_yes = types.KeyboardButton('Да')
-    markup.add(btn_yes, btn_no)
-    bot.send_message(chat_id, config.questionnaire_request, reply_markup=markup)
-    bot.register_next_step_handler(message, lambda message: questionnaire(message, bot))
+    # Запрашиваем будет ли пользователь заполнять анкету
+    bot.send_message(chat_id, config.questionnaire_request, reply_markup=yes_or_no_kb(types.ReplyKeyboardMarkup(resize_keyboard=True)))
+    bot.register_next_step_handler(message, lambda message: questionnaire_request(message, user_data, db, bot))
+
+
+def questionnaire_request(message, user_data, db, bot):
+    # Начинаем заполнять анкету
+    if message.text == "Да":
+        logger.info(f"User {message.chat.id} has started to fill questionnaire")
+        edit_profile_questionnaire(message, user_data, db, bot)
+
+    # Отправляем клавиатуру с главным меню без допуска к разделу "Обучение"
+    elif message.text == "Нет":
+        logger.info(f"User {message.chat.id} has refused to fill questionnaire")
+        bot.send_message(message.chat.id, config.about_questionaire,
+                         reply_markup=main_menu_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), db))
+    else:
+        bot.register_next_step_handler(message, lambda message: questionnaire_request(message, user_data, db, bot))

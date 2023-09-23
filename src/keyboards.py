@@ -1,35 +1,48 @@
+"""
+В этом модуле представлены все используемые клавиатуры.
+"""
+
 from telebot import types
 import config
-from src.users import find_user_by_chat_id
+from src.database import find_user_by_chat_id
 
 
-def main_menu_kb(message, markup, bot):
+def start_kb():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn_reg = types.KeyboardButton("Зарегистрироваться")
+    markup.add(btn_reg)
+    return markup
+
+def yes_or_no_kb(markup):
+    btn_no = types.KeyboardButton('Нет')
+    btn_yes = types.KeyboardButton('Да')
+    markup.add(btn_yes, btn_no)
+    return markup
+
+def main_menu_kb(message, markup, db):
     btns = []
 
-    if find_user_by_chat_id(message.chat.id)["access"]:
+    if find_user_by_chat_id(message.chat.id, db) \
+            and find_user_by_chat_id(message.chat.id, db)["access"]:
         btns.append(types.KeyboardButton("Обучение"))
     btns.append(types.KeyboardButton("Профиль"))
     btns.append(types.KeyboardButton('Об онлайн-школе'))
 
     for btn in btns:
         markup.add(btn)
+    return markup
 
-    bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
 
-
-def education_kb(message, markup, bot):
+def education_kb(markup):
     btn_choose = types.KeyboardButton('Выбрать платформу')
-    btn_get_homework = types.KeyboardButton('Получить домашнее задание')
-    btn_pass_homework = types.KeyboardButton('Пройти тестирование')
-    btn_progress = types.KeyboardButton('Прогресс')  # in future
-    btn_need_help = types.KeyboardButton('Нужна помощь')
+    btn_testing = types.KeyboardButton('Пройти тестирование')
     btn_main_menu = types.KeyboardButton('Главное меню')
-    markup.add(btn_choose, btn_get_homework, btn_pass_homework, btn_progress, btn_need_help, btn_main_menu)
+    btn_recommendations = types.KeyboardButton('Рекомендации')
+    markup.add(btn_choose, btn_testing, btn_main_menu, btn_recommendations)
+    return markup
 
-    bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
 
-
-def choose_platform_kb(message, markup, bot):
+def choose_platform_kb():
     markup = types.InlineKeyboardMarkup()
     btn_vk_edu = types.InlineKeyboardButton("VK",
                                             url='https://vk.com/video/@shkola.diabeta?section=playlists')
@@ -39,38 +52,34 @@ def choose_platform_kb(message, markup, bot):
     markup.add(btn_vk_edu)
     markup.add(btn_youtube_edu)
     markup.add(btn_dzen_edu)
+    return markup
 
-    bot.send_message(message.chat.id,
-                     "Программа обучения: https://vk.com/@shkola.diabeta-programma\nНажми на кнопку и перейди на сайт".format(
-                         message.from_user), reply_markup=markup)
-
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+def go_back_kb(markup):
     btn_main_menu = types.KeyboardButton('Главное меню')
     btn_education = types.KeyboardButton('Обучение')
     markup.add(btn_main_menu, btn_education)
-
-    bot.send_message(message.chat.id, "Для продолжения работы с чат-ботом вернитесь в один из предыдущих разделов.", reply_markup=markup)
-
+    return markup
 
 
 
-def about_school_kb(message, markup, bot):
+def about_school_kb(markup):
     btn_main_menu = types.KeyboardButton('Главное меню')
     markup.add(btn_main_menu)
-    bot.send_message(message.from_user.id, config.online_school_description, reply_markup=markup)
+    return markup
 
 
-def profile_kb(message, markup, bot):
+def profile_kb(markup):
     btn_show_profile = types.KeyboardButton('Посмотреть профиль')
     btn_edit_profile = types.KeyboardButton('Редактировать профиль')
     btn_get_back = types.KeyboardButton('Главное меню')
     markup.add(btn_show_profile, btn_edit_profile, btn_get_back)
+    return markup
 
-    bot.send_message(message.from_user.id, config.profile_section, reply_markup=markup)
 
-# def finish_edu_test_kb(message, markup, bot):
-#     btn_education = types.KeyboardButton("Обучение")
-#     btn_main_menu = types.KeyboardButton('Главное меню')
-#     markup.add(btn_education, btn_main_menu)
-
-#     bot.send_message(message.from_user.id, '👀 Выберите вариант из списка.', reply_markup=markup)
+def test_answers_kb():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn_one = types.KeyboardButton('1')
+    btn_two = types.KeyboardButton('2')
+    btn_three = types.KeyboardButton('3')
+    markup.add(btn_one, btn_two, btn_three)
+    return markup
