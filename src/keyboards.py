@@ -7,10 +7,23 @@ import config
 from src.database import find_user_by_chat_id
 
 
+def start_kb():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn_reg = types.KeyboardButton("Зарегистрироваться")
+    markup.add(btn_reg)
+    return markup
+
+def yes_or_no_kb(markup):
+    btn_no = types.KeyboardButton('Нет')
+    btn_yes = types.KeyboardButton('Да')
+    markup.add(btn_yes, btn_no)
+    return markup
+
 def main_menu_kb(message, markup, db):
     btns = []
 
-    if find_user_by_chat_id(message.chat.id, db)["access"]:
+    if find_user_by_chat_id(message.chat.id, db) \
+            and find_user_by_chat_id(message.chat.id, db)["access"]:
         btns.append(types.KeyboardButton("Обучение"))
     btns.append(types.KeyboardButton("Профиль"))
     btns.append(types.KeyboardButton('Об онлайн-школе'))
@@ -24,8 +37,8 @@ def education_kb(markup):
     btn_choose = types.KeyboardButton('Выбрать платформу')
     btn_testing = types.KeyboardButton('Пройти тестирование')
     btn_main_menu = types.KeyboardButton('Главное меню')
-    btn_progress = types.KeyboardButton('Прогресс')
-    markup.add(btn_choose, btn_testing, btn_main_menu, btn_progress)
+    btn_recommendations = types.KeyboardButton('Рекомендации')
+    markup.add(btn_choose, btn_testing, btn_main_menu, btn_recommendations)
     return markup
 
 

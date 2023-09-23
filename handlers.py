@@ -5,7 +5,10 @@ from main import logger as logger
 
 from src.profile import edit_profile, show_profile
 from src.registerPageUtils import process_name_step
-from src.keyboards import main_menu_kb, education_kb, choose_platform_kb, about_school_kb, profile_kb, go_back_kb
+
+from src.keyboards import main_menu_kb, education_kb, choose_platform_kb,\
+    about_school_kb, profile_kb, go_back_kb, start_kb
+
 from src.edu_test import start_testing
 from src.database import connect_db
 
@@ -13,35 +16,40 @@ from src.database import connect_db
 # Начало работы с ботом
 @bot.message_handler(commands=['start'])
 def start_user_flow(message):
-    logger.info(f"User {message.from_user.id} has started work with bot")
-    connect_db()
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn_reg = types.KeyboardButton("Зарегистрироваться")
-    markup.add(btn_reg)
-    bot.send_message(message.from_user.id, config.greetings, reply_markup=markup)
+    logger.info(f"User {message.chat.id} has started working with bot")
+
+    bot.send_message(message.chat.id, config.greetings, reply_markup=start_kb())
     bot.register_next_step_handler(message, register)
 
 
-# Остановка работы бота
+# Остановка и рестарт бота
 @bot.message_handler(commands=['stop'])
 def stop_user_flow(message):
-    logger.info(f"User {message.from_user.id} has finished work with bot")
+    logger.info(f"User {message.chat.id} has finished working with bot")
+
+    db = connect_db()
+    db.delete_user(message.chat.id)
+
+    bot.send_message(message.chat.id, config.restart)
+
 
 # Запуск регистрации
 @bot.message_handler(commands=['register'])
 def register(message):
     if message.text == "Зарегистрироваться":
         chat_id = message.chat.id
-        users = {chat_id: {}}
+        user_data = {}
         db = connect_db()
+
         logger.info(f"User {chat_id} has started registration")
+
         bot.send_message(chat_id, 'Введите ваше имя:', reply_markup=types.ReplyKeyboardRemove())
-        bot.register_next_step_handler(message, lambda message: process_name_step(message, users, db, bot))
+        bot.register_next_step_handler(message, lambda message: process_name_step(message, user_data, db, bot))
     else:
         bot.register_next_step_handler(message, register)
 
 
-# Обработчик основных текстовых запросов пользователя
+# Обработчик основных текстовых запросов. Навигация по разделам.
 @bot.message_handler(content_types=['text'])
 def handle_text_messages(message):
 
@@ -59,7 +67,9 @@ def handle_text_messages(message):
         bot.send_message(chat_id, config.online_school_description, reply_markup=about_school_kb(markup))
 
     elif message.text == 'Выбрать платформу':
+        # Инлайн клавиатура с платформами
         bot.send_message(chat_id, config.edu_programm.format(message.from_user), reply_markup=choose_platform_kb())
+        # Клавиатура с возможностью вернуться в один из предыдущих разделов
         bot.send_message(chat_id, config.go_back_message, reply_markup=go_back_kb(markup))
 
     elif message.text == 'Профиль':
@@ -81,24 +91,3 @@ def handle_text_messages(message):
     # Некорректный ввод
     else:
         bot.send_message(chat_id, config.incorrect_input)
-
-
-
-# @bot.message_handler(commands=['clear_db'])
-# def clear_db(message):
-#     db = connect_db("users.db")
-#     db.clear_database()
-#
-# @bot.message_handler(commands=['delete_user'])
-# def delete_user(message):
-#     db = connect_db("users.db")
-#     bot.send_message(message.chat.id, 'Введите id пользователя, которого нужно удалить:')
-#     bot.register_next_step_handler(message, lambda message: db.delete_user(message.text) )
-#
-# @bot.message_handler(commands=['all'])
-# def view_all(messege):
-#     db = connect_db("users.db")
-#     all_records = db.get_all_records()
-#     bot.send_message(messege.chat.id, "id | name | surname | email")
-#     for record in all_records:
-#         bot.send_message(messege.chat.id, f"{record[0]} | {record[1]} | {record[2]} | {record[3]}")

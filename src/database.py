@@ -1,18 +1,21 @@
+"""
+Здесь реализована взаимодействие с sqlite3 базой данных (users.db)
+"""
+
 import sqlite3
 import threading
 
 
-def find_user_by_chat_id(chat_id):
-    db = connect_db("users.db")
+# Ищем пользователя в базе данных (для функции "показать профиль")
+def find_user_by_chat_id(chat_id, db):
 
     query = f"SELECT * FROM users WHERE chat_id = {chat_id}"
 
     cursor = db.execute_query(query)
     record = cursor.fetchone()
 
-
     if record:
-        user_id, chat_id, name, surname, email, age, type_diabetes, place, number, access = record
+        user_id, chat_id, name, surname, email, age, type_diabetes, city, number, access = record
         return {
             "user_id": user_id,
             "chat_id": chat_id,
@@ -21,7 +24,7 @@ def find_user_by_chat_id(chat_id):
             "Почта": email,
             "Возраст": age,
             "Тип диабета": type_diabetes,
-            "Город": place,
+            "Город": city,
             "Номер телефона": number,
             "access": access
         }
@@ -31,10 +34,11 @@ def find_user_by_chat_id(chat_id):
 
 def connect_db():
 
+    # Создание объекта базы данных
     db = Database()
     # Установка соединения с базой данных
     db.connect()
-    # Создание таблицы, если она не существует
+    # Создание таблиц, если они не существует
     db.create_tables()
 
     return db
@@ -78,7 +82,7 @@ class Database:
                 email TEXT,
                 age TEXT,
                 type_diabetes TEXT,
-                place TEXT,
+                city TEXT,
                 number TEXT,
                 access INTEGER
             )
@@ -110,98 +114,50 @@ class Database:
         return records
 
     def delete_user(self, user_id):
-        query = f'DELETE FROM users WHERE id = {user_id}'
-        self.execute_query(query)
+        query = f'DELETE FROM users WHERE chat_id = ?'
+        self.execute_query(query, [str(user_id)])
 
     def clear_users_table(self):
-        query = 'DELETE * FROM users'
+        query = 'DELETE FROM users'
         self.execute_query(query)
 
     def clear_testing_table(self):
-        query = 'DELETE * FROM testing'
+        query = 'DELETE FROM testing'
         self.execute_query(query)
 
-    def insert_partial_user(self, chat_id, name, surname, email, age=None, type_diabetes=None, place=None, number=None,
-                            access=None):
+    def add_user(self, chat_id, name, surname, email,
+                 age=None, type_diabetes=None, city=None,
+                 number=None, access=None):
         query = 'INSERT INTO users (chat_id, name, surname, email'
         params = [chat_id, name, surname, email]
         value = "VALUES (?, ?, ?, ?"
 
-        if age is not None:
-            query += ', age'
-            value += ', ?'
-            params.append(age)
-
-        if type_diabetes is not None:
-            query += ', type_diabetes'
-            value += ', ?'
-            params.append(type_diabetes)
-
-        if place is not None:
-            query += ', place'
-            value += ', ?'
-            params.append(place)
-
-        if number is not None:
-            query += ', number'
-            value += ', ?'
-            params.append(number)
-
-        if access is not None:
-            query += ', access'
-            value += ', ?'
-            params.append(access)
+        if all((age, type_diabetes, city, number, access)):
+            query += ', age, type_diabetes, city, number, access'
+            value += ', ?, ?, ?, ?, ?'
+            params.append([age, type_diabetes, city, number, access])
 
         query += ') ' + value + ')'
 
         self.execute_query(query, tuple(params))
 
-    def update_partial_user(self, chat_id, name=None, surname=None, email=None, age=None, type_diabetes=None,
-                            place=None, number=None, access=None):
-        query = 'UPDATE users SET '
+    def update_user(self, chat_id, user_data):
+        query = 'UPDATE users SET ' \
+                'name = ?, surname = ?, email = ?, age = ?, type_diabetes = ?, city = ?, number = ?, access = ? ' \
+                'WHERE chat_id = ?'
 
-        params = []
+        params = (user_data["name"],
+                  user_data["surname"],
+                  user_data["email"],
+                  user_data["age"],
+                  user_data["type_diabetes"],
+                  user_data["city"],
+                  user_data["number"],
+                  user_data["access"],
+                  chat_id
+                  )
 
-        if name is not None:
-            query += 'name = ?, '
-            params.append(name)
-
-        if surname is not None:
-            query += 'surname = ?, '
-            params.append(surname)
-
-        if email is not None:
-            query += 'email = ?, '
-            params.append(email)
-
-        if age is not None:
-            query += 'age = ?, '
-            params.append(age)
-
-        if type_diabetes is not None:
-            query += 'type_diabetes = ?, '
-            params.append(type_diabetes)
-
-        if place is not None:
-            query += 'place = ?, '
-            params.append(place)
-
-        if number is not None:
-            query += 'number = ?, '
-            params.append(number)
-
-        if access is not None:
-            query += 'access = ?, '
-            params.append(access)
-
-        # Удаление последней запятой и пробела из запроса
-        query = query.rstrip(', ')
-
-        # Добавление условия для конкретного пользователя по chat_id
-        query += ' WHERE chat_id = ?'
-        params.append(chat_id)
-
-        self.execute_query(query, tuple(params))
+        self.execute_query(query, params)
 
     def insert_user_answers(self, results):
         query = 'INSERT INTO testing (chat_id, question_1, question_2, question_3) VALUES (?, ?, ?, ?)'

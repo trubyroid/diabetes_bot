@@ -6,14 +6,15 @@
 
 from main import logger as logger
 from src.keyboards import go_back_kb, test_answers_kb
+import config
 
 
 def start_testing(message, markup, db, bot):
-
-    logger.info(f"User {message.from_user.id} has started to go through the test")
-
     chat_id = message.chat.id
     answers = [chat_id]
+
+    logger.info(f"User {chat_id} has started to go through the test")
+
 
     bot.send_message(chat_id, 'Что происходит с сахаром крови при недостатке инсулина\n\n'
                               '1) Cахар крови повышается\n'
@@ -57,8 +58,8 @@ def test_finish(message, answers, markup, db, bot):
         test_question_3(message, answers, markup, db, bot)
     else:
         answers.append(message.text)
-        logger.info(f"User {message.from_user.id} has finished the test")
-        bot.send_message(message.from_user.id, 'Тестирование окончено.', reply_markup=go_back_kb(markup))
+        logger.info(f"User {message.chat.id} has finished the test")
+        bot.send_message(message.chat.id, config.testing_end, reply_markup=go_back_kb(markup))
 
         db.insert_user_answers(answers)
 
