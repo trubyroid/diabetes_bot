@@ -85,7 +85,7 @@ def handle_text_messages(message):
         edit_profile(message, db, bot)
 
     # Заглушка
-    elif message.text == 'Прогресс':
+    elif message.text == 'Рекомендации':
         bot.send_message(chat_id, config.progress_stub)
 
     # Некорректный ввод
