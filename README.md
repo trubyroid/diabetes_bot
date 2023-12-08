@@ -1,7 +1,7 @@
 DIABETES BOT
 ============
 MVP телеграм-бота, сделанный в рамках хакатона **StartDobro**.  
-![Sertificate](./images/sertificate.png){width=1 height=1}
+<img src="https://github.com/trubyroid/diabetes_bot/blob/main/images/sertificate.png" width="50" height="50" />  
 Цель проекта - обеспечение больных диабетом удобным инструментом для получения самой актуальной информации о заболевании.  
 
 Функционал:  
