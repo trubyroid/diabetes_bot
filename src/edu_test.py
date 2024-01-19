@@ -6,7 +6,7 @@
 
 from main import logger as logger
 from src.keyboards import go_back_kb, test_answers_kb
-import config
+import messages
 
 
 def start_testing(message, markup, db, bot):
@@ -59,7 +59,7 @@ def test_finish(message, answers, markup, db, bot):
     else:
         answers.append(message.text)
         logger.info(f"User {message.chat.id} has finished the test")
-        bot.send_message(message.chat.id, config.testing_end, reply_markup=go_back_kb(markup))
+        bot.send_message(message.chat.id, messages.testing_end, reply_markup=go_back_kb(markup))
 
         db.insert_user_answers(answers)
 

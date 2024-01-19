@@ -1,5 +1,5 @@
 from telebot import types
-import config
+import messages
 from main import bot as bot
 from main import logger as logger
 
@@ -18,7 +18,7 @@ from src.database import connect_db
 def start_user_flow(message):
     logger.info(f"User {message.chat.id} has started working with bot")
 
-    bot.send_message(message.chat.id, config.greetings, reply_markup=start_kb())
+    bot.send_message(message.chat.id, messages.greetings, reply_markup=start_kb())
     bot.register_next_step_handler(message, register)
 
 
@@ -30,7 +30,7 @@ def stop_user_flow(message):
     db = connect_db()
     db.delete_user(message.chat.id)
 
-    bot.send_message(message.chat.id, config.restart)
+    bot.send_message(message.chat.id, messages.restart)
 
 
 # Запуск регистрации
@@ -58,22 +58,22 @@ def handle_text_messages(message):
     chat_id = message.chat.id
 
     if message.text == 'Главное меню':
-        bot.send_message(chat_id, config.main_section, reply_markup=main_menu_kb(message, markup, db))
+        bot.send_message(chat_id, messages.main_section, reply_markup=main_menu_kb(message, markup, db))
 
     elif message.text == 'Обучение':
-        bot.send_message(chat_id, config.edu_section, reply_markup=education_kb(markup))
+        bot.send_message(chat_id, messages.edu_section, reply_markup=education_kb(markup))
 
     elif message.text == 'Об онлайн-школе':
-        bot.send_message(chat_id, config.online_school_description, reply_markup=about_school_kb(markup))
+        bot.send_message(chat_id, messages.online_school_description, reply_markup=about_school_kb(markup))
 
     elif message.text == 'Выбрать платформу':
         # Инлайн клавиатура с платформами
-        bot.send_message(chat_id, config.edu_programm.format(message.from_user), reply_markup=choose_platform_kb())
+        bot.send_message(chat_id, messages.edu_programm.format(message.from_user), reply_markup=choose_platform_kb())
         # Клавиатура с возможностью вернуться в один из предыдущих разделов
-        bot.send_message(chat_id, config.go_back_message, reply_markup=go_back_kb(markup))
+        bot.send_message(chat_id, messages.go_back_message, reply_markup=go_back_kb(markup))
 
     elif message.text == 'Профиль':
-        bot.send_message(chat_id, config.profile_section, reply_markup=profile_kb(markup))
+        bot.send_message(chat_id, messages.profile_section, reply_markup=profile_kb(markup))
 
     elif message.text == 'Пройти тестирование':
         start_testing(message, markup, db, bot)
@@ -86,8 +86,8 @@ def handle_text_messages(message):
 
     # Заглушка
     elif message.text == 'Рекомендации':
-        bot.send_message(chat_id, config.progress_stub)
+        bot.send_message(chat_id, messages.progress_stub)
 
     # Некорректный ввод
     else:
-        bot.send_message(chat_id, config.incorrect_input)
+        bot.send_message(chat_id, messages.incorrect_input)

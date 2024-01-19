@@ -6,7 +6,7 @@ from src.keyboards import main_menu_kb, yes_or_no_kb
 from src.profile import edit_profile_questionnaire
 from main import logger as logger
 from telebot import types
-import config
+import messages
 
 
 def process_name_step(message, user_data, db, bot):
@@ -46,7 +46,7 @@ def process_email_step(message, user_data, db, bot):
     logger.info(f"User {message.chat.id} has finished registration")
 
     # Запрашиваем будет ли пользователь заполнять анкету
-    bot.send_message(chat_id, config.questionnaire_request, reply_markup=yes_or_no_kb(types.ReplyKeyboardMarkup(resize_keyboard=True)))
+    bot.send_message(chat_id, messages.questionnaire_request, reply_markup=yes_or_no_kb(types.ReplyKeyboardMarkup(resize_keyboard=True)))
     bot.register_next_step_handler(message, lambda message: questionnaire_request(message, user_data, db, bot))
 
 
@@ -59,7 +59,7 @@ def questionnaire_request(message, user_data, db, bot):
     # Отправляем клавиатуру с главным меню без допуска к разделу "Обучение"
     elif message.text == "Нет":
         logger.info(f"User {message.chat.id} has refused to fill questionnaire")
-        bot.send_message(message.chat.id, config.about_questionaire,
+        bot.send_message(message.chat.id, messages.about_questionaire,
                          reply_markup=main_menu_kb(message, types.ReplyKeyboardMarkup(resize_keyboard=True), db))
     else:
         bot.register_next_step_handler(message, lambda message: questionnaire_request(message, user_data, db, bot))

@@ -1,4 +1,4 @@
 __pycache__/
 /users.db
 /users_history.log
-/.env
+/config/.env

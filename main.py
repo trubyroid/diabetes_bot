@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 
 # Загружаем токен из файла с переменными среды
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+dotenv_path = os.path.join(os.path.dirname(__file__), 'config/.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
 token = os.environ['TOKEN']

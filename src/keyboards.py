@@ -3,7 +3,7 @@
 """
 
 from telebot import types
-import config
+import messages
 from src.database import find_user_by_chat_id
 
 
